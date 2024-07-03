@@ -82,6 +82,12 @@ class Snake:
         self.x_dir = 1
         self.y_dir = 0
         self.direction = direction
+        self.commands = {
+            pygame.K_UP: self.move_up,
+            pygame.K_DOWN: self.move_down,
+            pygame.K_LEFT: self.move_left,
+            pygame.K_RIGHT: self.move_right
+        }
 
     def move_up(self):
         self.x_dir = 0
@@ -121,24 +127,13 @@ class Snake:
             cube.move(cube.x_dir, cube.y_dir, cube.direction)
 
     def move(self):
-        COMMANDS = {
-            pygame.K_UP: self.move_up,
-            pygame.K_DOWN: self.move_down,
-            pygame.K_LEFT: self.move_left,
-            pygame.K_RIGHT: self.move_right
-        }
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-            keys = pygame.key.get_pressed()
-            for key in COMMANDS:
-                if keys[key]:
-                    COMMANDS[key]()
+        keys = pygame.key.get_pressed()
+        for key in self.commands:
+            if keys[key]:
+                self.commands[key]()
 
         for index, cube in enumerate(self.body):
             x, y = cube.position
-            print(self.turns)
             if (x, y) in self.turns:
                 cube.move(*self.turns[(x, y)])
                 if index == len(self.body) - 1:
@@ -187,6 +182,11 @@ def game_loop():
         clock.tick(10)
         snake.move()
         draw_window(window, snake)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
 
 
 def main():

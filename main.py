@@ -174,5 +174,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-    # snake direction isn't tied with cube direction

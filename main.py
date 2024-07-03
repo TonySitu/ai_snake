@@ -56,7 +56,6 @@ class Snake:
 
     def __init__(self, color, position, direction=RIGHT):
         self.color = color
-        self.position = position
         self.head = Cube(position)
         self.body.append(self.head)
         self.x_dir = 1

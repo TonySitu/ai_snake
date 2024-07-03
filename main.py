@@ -23,26 +23,6 @@ class Cube:
         self.color = color
         self.direction = self.RIGHT
 
-    def move_up(self):
-        self.x_dir = 0
-        self.y_dir = -1
-        self.direction = self.UP
-
-    def move_down(self):
-        self.x_dir = 0
-        self.y_dir = 1
-        self.direction = self.DOWN
-
-    def move_left(self):
-        self.x_dir = -1
-        self.y_dir = 0
-        self.direction = self.LEFT
-
-    def move_right(self):
-        self.x_dir = 1
-        self.y_dir = 0
-        self.direction = self.RIGHT
-
     def move(self, x_dir, y_dir, direction):
         self.x_dir = x_dir
         self.y_dir = y_dir

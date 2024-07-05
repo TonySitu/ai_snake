@@ -130,6 +130,20 @@ class Snake:
             else:
                 cube.draw(window)
 
+    def add_cube(self):
+        tail = self.body[-1]
+        x, y = tail.position
+
+        match self.direction:
+            case 'UP':
+                self.body.append(Cube((x, y + 1), 0, -1))
+            case "DOWN":
+                self.body.append(Cube((x, -1), 0, 1))
+            case "LEFT":
+                self.body.append(Cube((x + 1, y), -1, 0))
+            case "RIGHT":
+                self.body.append(Cube((x - 1, y), 1, 0))
+
 
 def draw_grid(window):
     size_between = WIDTH // ROWS_COLS
@@ -151,15 +165,35 @@ def draw_window(window, snake):
     pygame.display.update()
 
 
+def spawn_snack(snake):
+    positions = snake.body
+
+    while True:
+        x = random.randrange(ROWS_COLS)
+        y = random.randrange(ROWS_COLS)
+
+        if len(list(filter(lambda z: z.position == (x, y), positions))) > 0:
+            continue
+        else:
+            break
+
+    return x, y
+
+
 def game_loop():
     window = pygame.display.set_mode((WIDTH, HEIGHT))
     snake = Snake((255, 0, 0), (5, 5))
     clock = pygame.time.Clock()
+    snack = Cube(spawn_snack(snake), color=(0, 255, 0))
 
     while True:
         pygame.time.delay(50)
         clock.tick(10)
         snake.move()
+        if snake.body[0].position == snack.position:
+            snake.add_cube()
+            snack = Cube(spawn_snack(snake), color=(0, 255, 0))
+
         draw_window(window, snake)
 
         for event in pygame.event.get():

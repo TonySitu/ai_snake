@@ -98,6 +98,7 @@ class Snake:
                 self.commands[key]()
 
         for index, cube in enumerate(self.body):
+            self.check_collision()
             x, y = cube.position
             if (x, y) in self.turns:
                 cube.move(*self.turns[(x, y)])
@@ -114,6 +115,11 @@ class Snake:
                     cube.position = (x, ROWS_COLS - 1)
                 else:  # only move straight if not at edge
                     cube.move(cube.x_dir, cube.y_dir, cube.direction)
+
+    def check_collision(self):
+        for x in range(len(self.body)):
+            if self.body[x].position in list(map(lambda z: z.position, self.body[x + 1:])):
+                print("score: ", len(self.body))
 
     def draw(self, window):
         for index, cube in enumerate(self.body):

@@ -1,5 +1,8 @@
+import os
+
 import pygame
 import random
+import neat
 
 WIDTH = 500
 HEIGHT = 500
@@ -201,8 +204,22 @@ def game_loop():
         draw_window(window, snake, snack)
 
 
+def simulate_run(config_path):
+    configuration = neat.config.Config(neat.DefaultGenome,
+                                       neat.DefaultReproduction,
+                                       neat.DefaultSpeciesSet,
+                                       neat.DefaultStagnation,
+                                       config_path)
+    population = neat.Population(configuration)
+    population.add_reporter(neat.StdOutReporter(True))
+    stats = neat.StatisticsReporter()
+    population.add_reporter(stats)
+
+
 def main():
-    game_loop()
+    local_dir = os.path.dirname(__file__)
+    config_path = os.path.join(local_dir, "neat_config")
+    simulate_run(config_path)
 
 
 if __name__ == "__main__":

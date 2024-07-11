@@ -1,5 +1,4 @@
 import os
-
 import pygame
 import random
 import neat
@@ -95,11 +94,6 @@ class Snake:
         self.turns[self.head.position[:]] = (self.x_dir, self.y_dir, self.direction)
 
     def move(self):
-        #keys = pygame.key.get_pressed()
-        #for key in self.commands:
-            #if keys[key]:
-                #self.commands[key]()
-
         for index, cube in enumerate(self.body):
             x, y = cube.position
             if (x, y) in self.turns:

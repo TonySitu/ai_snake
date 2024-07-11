@@ -142,12 +142,15 @@ class Snake:
 
 def check_collision(snakes, nets, ge):
     snake = snakes[0]
-    for x in range(len(snakes[0].body)):
-        if snake.body[x].position in list(map(lambda z: z.position, snake.body[x + 1:])):
-            ge[0].fitness -= 1
-            snakes.pop(0)
-            nets.pop(0)
-            ge.pop(0)
+    if len(snake.body) == 1:
+        pass
+    else:
+        for x in range(len(snake.body) - 1):
+            if snake.body[x].position in list(map(lambda z: z.position, snake.body[x + 1:])):
+                ge[0].fitness -= 1
+                snakes.pop(0)
+                nets.pop(0)
+                ge.pop(0)
 
 
 def draw_grid(window):

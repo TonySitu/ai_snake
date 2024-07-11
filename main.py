@@ -95,13 +95,12 @@ class Snake:
         self.turns[self.head.position[:]] = (self.x_dir, self.y_dir, self.direction)
 
     def move(self):
-        keys = pygame.key.get_pressed()
-        for key in self.commands:
-            if keys[key]:
-                self.commands[key]()
+        #keys = pygame.key.get_pressed()
+        #for key in self.commands:
+            #if keys[key]:
+                #self.commands[key]()
 
         for index, cube in enumerate(self.body):
-            self.check_collision()
             x, y = cube.position
             if (x, y) in self.turns:
                 cube.move(*self.turns[(x, y)])
@@ -118,11 +117,6 @@ class Snake:
                     cube.position = (x, ROWS_COLS - 1)
                 else:  # only move straight if not at edge
                     cube.move(cube.x_dir, cube.y_dir, cube.direction)
-
-    def check_collision(self):
-        for x in range(len(self.body)):
-            if self.body[x].position in list(map(lambda z: z.position, self.body[x + 1:])):
-                print("score: ", len(self.body))
 
     def draw(self, window):
         for index, cube in enumerate(self.body):
@@ -144,6 +138,16 @@ class Snake:
                 self.body.append(Cube((x + 1, y), tail.direction, tail.x_dir, tail.y_dir))
             case "RIGHT":
                 self.body.append(Cube((x - 1, y), tail.direction, tail.x_dir, tail.y_dir))
+
+
+def check_collision(snakes, nets, ge):
+    snake = snakes[0]
+    for x in range(len(snakes[0].body)):
+        if snake.body[x].position in list(map(lambda z: z.position, snake.body[x + 1:])):
+            ge[0].fitness -= 1
+            snakes.pop(0)
+            nets.pop(0)
+            ge.pop(0)
 
 
 def draw_grid(window):
@@ -182,20 +186,43 @@ def spawn_snack(snake):
     return x, y
 
 
-def game_loop():
+def game_loop(genomes, config):
     window = pygame.display.set_mode((WIDTH, HEIGHT))
     snake = Snake((255, 0, 0), (5, 5))
     clock = pygame.time.Clock()
     snack = Cube(spawn_snack(snake), snake.direction, color=(0, 255, 0))
+    nets = []
+    ge = []
+    snakes = []
 
-    while True:
+    for _, g in genomes:
+        net = neat.nn.FeedForwardNetwork.create(g, config)
+        nets.append(net)
+        snakes.append(Snake((255, 0, 0), (5, 5)))
+        g.fitness = 0
+        ge.append(g)
+
+    while len(snakes) > 0:
         clock.tick(10)
+        positions = [cube.position for cube in snakes[0].body]
+        output = nets[0].activate((snakes[0].head.position, positions, snack.position))
+        for i in range(0, 3):
+            if max(output) == output[i]:
+                if i == 0:
+                    snakes[0].move_up()
+                elif i == 1:
+                    snakes[0].move_down()
+                elif i == 2:  # Left
+                    snakes[0].move_left()
+                else:
+                    snakes[0].move_right()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
 
+        check_collision(snakes, nets, ge)
         snake.move()
         if snake.body[0].position == snack.position:
             snake.add_cube()
@@ -215,10 +242,12 @@ def simulate_run(config_path):
     stats = neat.StatisticsReporter()
     population.add_reporter(stats)
 
+    population.run(lambda genomes, config: game_loop(genomes, config), 1)
+
 
 def main():
     local_dir = os.path.dirname(__file__)
-    config_path = os.path.join(local_dir, "neat_config")
+    config_path = os.path.join(local_dir, "config-feedforward.txt")
     simulate_run(config_path)
 
 

@@ -224,6 +224,7 @@ def game_loop(genomes, config):
         if snake.body[0].position == snack.position:
             snake.add_cube()
             snack = Cube(spawn_snack(snake), None, color=(0, 255, 0))
+            ge[0].fitness += 3
 
         draw_window(window, snake, snack)
 
